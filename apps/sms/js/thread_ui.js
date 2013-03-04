@@ -7,9 +7,7 @@ var ThreadUI = {
   // Time buffer for the 'last-messages' set. In this case 10 min
   LAST_MESSSAGES_BUFFERING_TIME: 10 * 60 * 1000,
   CHUNK_SIZE: 10,
-  PHONE_REGEX: /(\+?1?[-.]?\(?([0-9]{3})\)?[-.]?)?([0-9]{3})[-.]?([0-9]{4})([0-9]{1,4})?/mg,
   EMAIL_REGEX: /([\w\.-]+)@([\w\.-]+)\.([a-z\.]{2,6})/mgi,
-  URL_REGEX: /(^|\s|,|;)[-\w:%\+.~#?&//=]{2,256}\.[a-z]{2,6}(?:\/[-\w:%\+.~#?&//=]*)?/mgi,
 
   get view() {
     delete this.view;
@@ -584,33 +582,15 @@ var ThreadUI = {
    function thui_searchAndLinkClickableData(messageDOM, messageText) {
     var bodyHTML = messageText;
 
-    //search and link phone numbers in the message
-    bodyHTML = this.searchAndLinkPhoneData(messageDOM, bodyHTML);
     //search and link email addresses in the message
     bodyHTML = this.searchAndLinkEmail(messageDOM, bodyHTML);
-    //search and link urls in the message
-    bodyHTML = this.searchAndLinkUrl(messageDOM, bodyHTML);
+
     //check for messageDOM paragraph element to assign linked message html
 
     var pElement = messageDOM.querySelector('p');
     pElement.innerHTML = bodyHTML;
 
     return messageDOM;
-  },
-
-  /*
-   * this method searches for phone numbers in the message
-   * and associates anchor links so that contactDialog is shown.
-   */
-
-  searchAndLinkPhoneData:
-  function thui_searchAndLinkPhoneData(messageDOM, bodytext) {
-     var result = bodytext.replace(this.PHONE_REGEX, function(phone) {
-      var linkText = '<a data-action="phone-link" data-phonenumber="' +
-                      phone + '">' + phone + '</a>';
-      return linkText;
-    });
-     return result;
   },
 
    /*
@@ -628,35 +608,6 @@ var ThreadUI = {
 
     return result;
   },
-
-  /*
-   * this method searches for URL in the message
-   * and make url strings clickable
-   */
-
-  searchAndLinkUrl:
-  function thui_searchAndLinkUrlData(messageDOM, bodytext) {
-    var result = bodytext.replace(this.URL_REGEX, function(url, delimiter) {
-      var linkText = '';
-
-      //check if url has http(s) in beginning,if not append
-      //http:// at beginning of the url
-      var httpPrefix = url.match(/\bhttps?:\/\//gi) ? '' : 'http://';
-
-      //Assosciate anchor links. Append http prefix and
-      //handle space,',', ';' at start of the URL
-
-      url = url.replace(delimiter, '');
-
-      linkText = delimiter + '<a href="' + httpPrefix + url + '" data-url="' +
-                 url + '" data-action="url-link" >' + url + '</a>';
-      return linkText;
-    });
-
-    return result;
-  },
-
-
 
   appendMessage: function thui_appendMessage(message, hidden) {
     // build messageDOM adding the links
