@@ -7,6 +7,7 @@ var ThreadUI = {
   // Time buffer for the 'last-messages' set. In this case 10 min
   LAST_MESSSAGES_BUFFERING_TIME: 10 * 60 * 1000,
   CHUNK_SIZE: 10,
+  PHONE_REGEX: /(\+?1?[-.]?\(?([0-9]{3})\)?[-.]?)?([0-9]{3})[-.]?([0-9]{4})([0-9]{1,4})?/mg,
   EMAIL_REGEX: /([\w\.-]+)@([\w\.-]+)\.([a-z\.]{2,6})/mgi,
 
   get view() {
@@ -574,13 +575,16 @@ var ThreadUI = {
     return this.searchAndLinkClickableData(messageDOM, bodyText);
   },
 
-/* This method matches for strings having email, phone numbers and URL
+  /* This method matches for strings having email, phone numbers and URL
   * and make them clickable
   */
 
   searchAndLinkClickableData:
    function thui_searchAndLinkClickableData(messageDOM, messageText) {
     var bodyHTML = messageText;
+
+    //search and link phone numbers in the message
+    bodyHTML = this.searchAndLinkPhoneData(messageDOM, bodyHTML);
 
     //search and link email addresses in the message
     bodyHTML = this.searchAndLinkEmail(messageDOM, bodyHTML);
@@ -593,10 +597,20 @@ var ThreadUI = {
     return messageDOM;
   },
 
-   /*
-   * this method searches for email addresses in the message
-   * and make email addresses clickable
+  /*
+   * this method searches for phone numbers in the message
+   * and associates anchor links so that contactDialog is shown.
    */
+
+  searchAndLinkPhoneData:
+  function thui_searchAndLinkPhoneData(messageDOM, bodytext) {
+    var result = bodytext.replace(this.PHONE_REGEX, function(phone) {
+     var linkText = '<a data-action="phone-link" data-phonenumber="' +
+                     phone + '">' + phone + '</a>';
+     return linkText;
+    });
+    return result;
+ },
 
   searchAndLinkEmail:
   function thui_searchAndLinkEmailData(messageDOM, bodytext) {
