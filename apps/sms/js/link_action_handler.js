@@ -82,8 +82,13 @@ var LinkActionHandler = {
   },
 
   addToExistingContact: function lah_addToExistingContact(phoneNumber) {
-    try {
-      var activity = new MozActivity({
+    ContactDataManager.getContacts(function gotContact(contacts) {
+      if ((contacts) && (contacts.length === 0)) {
+        alert(LinkActionHandler._l10n.get('emptyContactList'));
+        return;
+      }
+      try {
+        var activity = new MozActivity({
         name: 'update',
         data: {
           type: 'webcontacts/contact',
@@ -91,10 +96,11 @@ var LinkActionHandler = {
             'tel': phoneNumber
           }
         }
-      });
-    } catch (e) {
-      console.log('WebActivities unavailable? : ' + e);
-    }
+        });
+      } catch (e) {
+        console.log('WebActivities unavailable? : ' + e);
+      }
+    });
   },
 
   call: function lah_call(phoneNumber) {

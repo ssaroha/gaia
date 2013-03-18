@@ -559,3 +559,9 @@ form.bottom[role="search"].new-sms-form {
   color: #FF4E00;
   z-index: 4;
 }
+
+/* Override Building Block [ActionMenu] styles */
+form[role="dialog"][data-type="action"] > header:first-child {
+  text-align: left;
+  margin-top: 15rem;
+}
