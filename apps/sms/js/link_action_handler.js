@@ -49,12 +49,13 @@ var LinkActionHandler = {
       {
         name: _('addToExistingContact'),
         method: function optionMethod(param) {
-          if (self.addToExistingContact(param)) {
-            options.hide();
-          }
-          else {
-            options.show();
-          }
+          self.addToExistingContact(param, 
+            function onSuccess() {
+              options.hide();
+            }, 
+            function onFailure() {
+              options.show();
+            });
         },
         params: [phoneNumber]
       },
@@ -86,9 +87,9 @@ var LinkActionHandler = {
     }
   },
 
-  addToExistingContact: function lah_addToExistingContact(phoneNumber) {
+  addToExistingContact: function lah_addToExistingContact(phoneNumber, 
+    onSuccess, onFailure) {
       try {
-        var result = true;
         var activity = new MozActivity({
         name: 'update',
         data: {
@@ -98,10 +99,16 @@ var LinkActionHandler = {
           }
         }
       });
-        activity.onerror = function lah_contactUpdateFailure() {
-          result = false;
+        activity.onsuccess = function lah_contactUpdateSuccess() {
+          if (onSuccess) {
+            onSuccess();
+          }
         };
-      return result;
+        activity.onerror = function lah_contactUpdateFailure() {
+          if (onFailure) {
+            onFailure();
+          }
+        };
     } catch (e) {
         console.log('WebActivities unavailable? : ' + e);
     }
