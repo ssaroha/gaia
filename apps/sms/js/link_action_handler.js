@@ -5,7 +5,6 @@
 */
 
 var LinkActionHandler = {
-  _l10n: navigator.mozL10n,
   handleBrowserEvent:
   function lah_handleBrowserEvent(link) {
     try {
@@ -32,28 +31,35 @@ var LinkActionHandler = {
     var options = new OptionMenu({
     'items': [
       {
-        name: this._l10n.get('call'),
+        name: _('call'),
         method: function optionMethod(param) {
           self.call(param);
+          options.hide();
         },
         params: [phoneNumber]
       },
       {
-        name: this._l10n.get('createNewContact'),
+        name: _('createNewContact'),
         method: function optionMethod(param) {
           self.createNewContact(param);
+          options.hide();
         },
         params: [phoneNumber]
       },
       {
-        name: this._l10n.get('addToExistingContact'),
+        name: _('addToExistingContact'),
         method: function optionMethod(param) {
-          self.addToExistingContact(param);
+          if (self.addToExistingContact(param)) {
+            options.hide();
+          }
+          else {
+            options.show();
+          }
         },
         params: [phoneNumber]
       },
       {
-        name: this._l10n.get('cancel'),
+        name: _('cancel'),
         method: function optionMethod(param) {
           options.hide();
         }
@@ -78,16 +84,11 @@ var LinkActionHandler = {
     } catch (e) {
       console.log('WebActivities unavailable? : ' + e);
     }
-
   },
 
   addToExistingContact: function lah_addToExistingContact(phoneNumber) {
-    ContactDataManager.getContacts(function gotContact(contacts) {
-      if ((contacts) && (contacts.length === 0)) {
-        alert(LinkActionHandler._l10n.get('emptyContactList'));
-        return;
-      }
       try {
+        var result = true;
         var activity = new MozActivity({
         name: 'update',
         data: {
@@ -96,11 +97,14 @@ var LinkActionHandler = {
             'tel': phoneNumber
           }
         }
-        });
-      } catch (e) {
+      });
+        activity.onerror = function lah_contactUpdateFailure() {
+          result = false;
+        };
+      return result;
+    } catch (e) {
         console.log('WebActivities unavailable? : ' + e);
-      }
-    });
+    }
   },
 
   call: function lah_call(phoneNumber) {

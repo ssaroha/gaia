@@ -80,8 +80,6 @@ var OptionMenu = function(options) {
     if (action) {
       method.apply(null, action.params || []);
     }
-    // Hide action menu when click is received
-    this.hide();
   }.bind(this));
   // Appending the action menu to the form
   this.actionMenu.appendChild(_menu);

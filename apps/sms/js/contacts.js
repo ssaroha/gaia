@@ -31,22 +31,6 @@ var ContactDataManager = {
       callback(null);
     };
   },
-
-  getContacts: function cm_getContacts(callback) {
-    // so desktop keeps working
-    if (!navigator.mozContacts) {
-      return;
-    }
-    var req = window.navigator.mozContacts.find({});
-    req.onsuccess = function onsuccess() {
-      callback(req.result);
-    };
-    req.onerror = function() {
-       console.log('Error getting contact count. Error: ', req.error.name);
-       callback(null);
-    };
-  },
-
   searchContactData: function cm_searchContactData(string, callback) {
     // so desktop keeps working
     if (!navigator.mozSms)
