@@ -31,6 +31,7 @@ var ContactDataManager = {
       callback(null);
     };
   },
+  
   searchContactData: function cm_searchContactData(string, callback) {
     // so desktop keeps working
     if (!navigator.mozSms)
