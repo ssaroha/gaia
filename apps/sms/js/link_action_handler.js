@@ -31,38 +31,23 @@ var LinkActionHandler = {
     var options = new OptionMenu({
     'items': [
       {
-        name: _('call'),
-        method: function optionMethod(param) {
-          self.call(param);
-          options.hide();
-        },
-        params: [phoneNumber]
-      },
-      {
         name: _('createNewContact'),
         method: function optionMethod(param) {
           self.createNewContact(param);
-          options.hide();
         },
         params: [phoneNumber]
       },
       {
         name: _('addToExistingContact'),
         method: function optionMethod(param) {
-          self.addToExistingContact(param,
-            function onSuccess() {
-              options.hide();
-            },
-            function onFailure() {
-              options.show();
-            });
+          self.addToExistingContact(param);
         },
         params: [phoneNumber]
       },
       {
         name: _('cancel'),
         method: function optionMethod(param) {
-          options.hide();
+          // TODO Add functionality if needed
         }
       }
     ],
@@ -91,21 +76,21 @@ var LinkActionHandler = {
     onSuccess, onFailure) {
       try {
         var activity = new MozActivity({
-        name: 'update',
-        data: {
-          type: 'webcontacts/contact',
-          params: {
-            'tel': phoneNumber
+          name: 'update',
+          data: {
+            type: 'webcontacts/contact',
+            params: {
+              'tel': phoneNumber
+            }
           }
-        }
-      });
+        });
         activity.onsuccess = function lah_contactUpdateSuccess() {
-          if (onSuccess) {
+          if (onSuccess && typeof onSuccess === 'function') {
             onSuccess();
           }
         };
         activity.onerror = function lah_contactUpdateFailure() {
-          if (onFailure) {
+          if (onFailure && typeof onFailure === 'function') {
             onFailure();
           }
         };
