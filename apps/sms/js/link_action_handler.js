@@ -49,10 +49,10 @@ var LinkActionHandler = {
       {
         name: _('addToExistingContact'),
         method: function optionMethod(param) {
-          self.addToExistingContact(param, 
+          self.addToExistingContact(param,
             function onSuccess() {
               options.hide();
-            }, 
+            },
             function onFailure() {
               options.show();
             });
